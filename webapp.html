@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Leaders CIRCLe - Careerware Coaching</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f8fafc; color: #1e293b; line-height: 1.5; }
+        
+        header { background: #0f172a; color: #ffffff; padding: 14px 24px; position: sticky; top: 0; z-index: 50; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+        .header-inner { max-width: 1240px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+        .brand-group { display: flex; align-items: center; gap: 14px; }
+        .logo-badge { width: 42px; height: 42px; background: #1e293b; border: 1px solid #334155; color: #38bdf8; font-weight: 800; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .brand-company { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; display: block; }
+        .brand-app { font-size: 18px; font-weight: 800; color: #f8fafc; }
+        .header-tag { font-size: 12px; background: #1e293b; color: #cbd5e1; padding: 6px 12px; border-radius: 20px; border: 1px solid #334155; font-weight: 600; }
+
+        .container { max-width: 1240px; margin: 28px auto; padding: 0 16px; display: grid; grid-template-columns: 360px 1fr; gap: 28px; align-items: start; }
+        @media (max-width: 900px) { .container { grid-template-columns: 1fr; } }
+        
+        .card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+        .sticky-side { position: sticky; top: 88px; }
+        
+        .score-box { font-size: 38px; font-weight: 900; color: #2563eb; margin: 6px 0; }
+        .cat-title { font-size: 19px; font-weight: 800; color: #0f172a; margin-bottom: 4px; }
+        .cat-desc { font-size: 13px; color: #64748b; margin-bottom: 18px; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px; }
+        .subcat-title { font-size: 11px; font-weight: 800; color: #0284c7; text-transform: uppercase; margin: 18px 0 8px 0; }
+        
+        .q-item { margin-bottom: 18px; }
+        .q-text { font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 8px; }
+        
+        .btn-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; }
+        .rating-btn { height: 34px; border: 1px solid #cbd5e1; background: #fff; border-radius: 6px; font-size: 12px; font-weight: 600; color: #475569; cursor: pointer; }
+        
+        .rating-btn.is-default { background-color: #e0f2fe !important; color: #0369a1 !important; border-color: #7dd3fc !important; font-weight: 700; }
+        .rating-btn.is-user { background-color: #2563eb !important; color: #ffffff !important; border-color: #2563eb !important; font-weight: 700; }
+
+        .btn-reset { display: block; width: 100%; text-align: center; background: none; border: 1px solid #cbd5e1; padding: 8px; border-radius: 6px; font-size: 12px; font-weight: 600; color: #64748b; cursor: pointer; margin-top: 12px; }
+        
+        /* SVG Radar Wheel Styles */
+        .radar-svg { width: 100%; height: auto; max-width: 300px; display: block; margin: 0 auto; }
+        .radar-grid { stroke: #e2e8f0; stroke-width: 1; fill: none; }
+        .radar-axis { stroke: #cbd5e1; stroke-width: 1; }
+        .radar-polygon { fill: rgba(37, 99, 235, 0.25); stroke: #2563eb; stroke-width: 2.5; transition: all 0.2s ease; }
+        .radar-point { fill: #2563eb; stroke: #ffffff; stroke-width: 1.5; }
+        .radar-label { font-size: 9px; font-weight: 700; fill: #475569; text-anchor: middle; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-inner">
+            <div class="brand-group">
+                <div class="logo-badge">TLC</div>
+                <div>
+                    <span class="brand-company">Careerware Coaching</span>
+                    <span class="brand-app">Tech Leaders CIRCLe</span>
+                </div>
+            </div>
+            <div class="header-tag">Leadership Insights</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Sidebar Dashboard -->
+        <div class="sticky-side">
+            <div class="card">
+                <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 12px;">Maturity Balance Wheel</h3>
+                <svg id="radarSvg" class="radar-svg" viewBox="0 0 300 300"></svg>
+            </div>
+            <div class="card">
+                <div style="font-size: 11px; font-weight: 800; color: #94a3b8; text-transform: uppercase;">OVERALL MATURITY INDEX</div>
+                <div id="overall-score" class="score-box">5.0</div>
+                <div style="font-size: 12px; color: #64748b;">Default initial ratings set to 5 (light blue). Select ratings below to build your profile.</div>
+                <button class="btn-reset" onclick="resetAnswers()">Reset Ratings to Default</button>
+            </div>
+        </div>
+
+        <!-- Questions List -->
+        <div id="questions-container"></div>
+    </div>
+
+    <script>
+        const CATEGORIES = ["Capacity", "Innovation", "Resolve", "Career Clarity", "Leadership", "External Interfaces"];
+
+        const CATEGORY_SUMMARIES = {
+            "Capacity": "Consider how effectively time is used: is optimal time reserved for supervision of reports at all levels, not too much or too little?",
+            "Innovation": "Are all adjacent organisation levels awarded a safe space within which innovation is encouraged to happen?",
+            "Resolve": "How resolute or committed are you and your immediate reports estimated to feel to the current organisation and role?",
+            "Career Clarity": "Are you and your reports focusing successfully on keeping alignment between your intended career path and available opportunities?",
+            "Leadership": "Maintain clear associations between Roles and decision-making responsibilities for yourself and for your reports.",
+            "External Interfaces": "How well do you and your team(s) understand your obligations to functions like HR, Compliance, InfoSec, and Buildings Management?"
+        };
+
+        const CATEGORY_QUESTIONS = {
+            "Capacity": {
+                subCategories: [
+                    { name: "Supervision", questions: [
+                        { id: 1, text: "What is your level of confidence that you receive an appropriate and effective amount of supervision and support from the organisation?" },
+                        { id: 2, text: "What is your level of confidence that you GIVE an appropriate and effective amount of supervision to your reports?" },
+                        { id: 3, text: "If you applied the same questions to those staff in your team or reporting to you, what do you think the lowest level of satisfaction would be?" }
+                    ]},
+                    { name: "Delegation", questions: [
+                        { id: 4, text: "What is your level of confidence that you receive an appropriate and effective delegation from your supervisor?" },
+                        { id: 5, text: "What is your level of confidence that you delegate appropriately and effectively to your reports?" },
+                        { id: 6, text: "If you applied the same questions to those staff in your team or reporting to you, what do you think the lowest level of satisfaction would be?" }
+                    ]}
+                ]
+            },
+            "Innovation": {
+                questions: [
+                    { id: 7, text: "What is your level of confidence that you are part of a culture which supports innovation?" },
+                    { id: 8, text: "What is your level of confidence that you are part of a no-blame culture, regarding innovation and change?" },
+                    { id: 9, text: "What is your level of confidence that you will personally drive innovation when a suitable situation arises?" },
+                    { id: 10, text: "If you applied the same questions to those staff in your team or reporting to you, what do you think the lowest level of satisfaction would be?" }
+                ]
+            },
+            "Resolve": {
+                subCategories: [
+                    { name: "Profile & Perception", questions: [
+                        { id: 11, text: "How satisfied are you that your own profile is a good representation of your attributes, achievements, and potential?" },
+                        { id: 12, text: "What if you ask yourself the same question regarding your public profile (e.g. social media)?" },
+                        { id: 13, text: "Do you find time to maintain your public profile to a level of detail with which you are happy?" },
+                        { id: 14, text: "If you applied the same questions to those staff reporting to you, what do you think the lowest level of satisfaction would be?" }
+                    ]},
+                    { name: "Training", questions: [
+                        { id: 15, text: "How satisfied are you with the training opportunities currently provided by your organisation?" },
+                        { id: 16, text: "If you asked the above question to all your reports what do you think the lowest response would be?" }
+                    ]},
+                    { name: "Industry Events", questions: [
+                        { id: 17, text: "How satisfied are you with the support your organisation gives you to participate in industry events?" },
+                        { id: 18, text: "If you asked the above question to all your reports what do you think the lowest response would be?" }
+                    ]},
+                    { name: "Market Value", questions: [
+                        { id: 19, text: "How satisfied are you that your current market value is roughly where you want it to be?" },
+                        { id: 20, text: "How confident are you that your market value will perform as you wish it to over the next 12 months?" },
+                        { id: 21, text: "If you applied the same questions to staff reporting to you, what do you think the lowest satisfaction would be?" }
+                    ]}
+                ]
+            },
+            "Career Clarity": {
+                questions: [
+                    { id: 22, text: "How much clarity do you have regarding the career path that you want to follow for the next 3 years?" },
+                    { id: 23, text: "Are you doing everything possible to align your current position with your 3-year career path?" },
+                    { id: 24, text: "Are you confident that you know which levers to pull to align yourself with your chosen career path?" },
+                    { id: 25, text: "If you applied the same questions to your staff, what do you think the lowest level of clarity would be?" }
+                ]
+            },
+            "Leadership": {
+                subCategories: [
+                    { name: "Personal Decisions", questions: [
+                        { id: 26, text: "How much clarity do you have regarding the precise scope of decisions you are personally responsible for?" },
+                        { id: 27, text: "What if you apply the same question to your team/reports?" }
+                    ]},
+                    { name: "Committee Decisions", questions: [
+                        { id: 28, text: "How much clarity do you have regarding which decisions need to be made by a committee?" },
+                        { id: 29, text: "How confident are you that the decision-making committees you belong to operate efficiently?" }
+                    ]}
+                ]
+            },
+            "External Interfaces": {
+                questions: [
+                    { id: 30, text: "What is your level of confidence regarding Human Resources policy and procedure obligations?" },
+                    { id: 31, text: "What if you ask yourself the same question regarding Compliance?" },
+                    { id: 32, text: "What if you ask yourself the same question regarding Information Security?" },
+                    { id: 33, text: "What if you ask yourself the same question regarding Buildings Management?" },
+                    { id: 34, text: "If you asked all your reports the same questions, what do you think the lowest confidence score would be?" }
+                ]
+            }
+        };
+
+        let userAnswers = {};
+
+        function getQuestionList(catData) {
+            let list = [];
+            if (catData.questions) list = list.concat(catData.questions);
+            if (catData.subCategories) {
+                catData.subCategories.forEach(sub => { list = list.concat(sub.questions); });
+            }
+            return list;
+        }
+
+        function renderForm() {
+            const container = document.getElementById('questions-container');
+            let html = '';
+
+            CATEGORIES.forEach(catName => {
+                const catData = CATEGORY_QUESTIONS[catName];
+                let innerHtml = '';
+
+                if (catData.questions) {
+                    innerHtml += renderQuestionsGroup(catData.questions);
+                }
+                if (catData.subCategories) {
+                    catData.subCategories.forEach(sub => {
+                        innerHtml += `<div class="subcat-title">${sub.name}</div>`;
+                        innerHtml += renderQuestionsGroup(sub.questions);
+                    });
+                }
+
+                html += `
+                    <div class="card">
+                        <div class="cat-title">${catName}</div>
+                        <div class="cat-desc">${CATEGORY_SUMMARIES[catName]}</div>
+                        ${innerHtml}
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function renderQuestionsGroup(questions) {
+            return questions.map(q => {
+                let buttons = '';
+                for (let i = 1; i <= 10; i++) {
+                    const isDef = (i === 5) ? 'is-default' : '';
+                    buttons += `<button type="button" class="rating-btn btn-q-${q.id} ${isDef}" data-val="${i}" onclick="selectScore(${q.id}, ${i})">${i}</button>`;
+                }
+
+                return `
+                    <div class="q-item">
+                        <div class="q-text">${q.id}. ${q.text}</div>
+                        <div class="btn-grid">${buttons}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectScore(qId, val) {
+            userAnswers[qId] = val;
+
+            document.querySelectorAll(`.btn-q-${qId}`).forEach(btn => {
+                btn.classList.remove('is-default', 'is-user');
+                if (parseInt(btn.getAttribute('data-val')) === val) {
+                    btn.classList.add('is-user');
+                }
+            });
+
+            updateScores();
+        }
+
+        function resetAnswers() {
+            userAnswers = {};
+
+            document.querySelectorAll('.rating-btn').forEach(btn => {
+                btn.classList.remove('is-default', 'is-user');
+                if (parseInt(btn.getAttribute('data-val')) === 5) {
+                    btn.classList.add('is-default');
+                }
+            });
+
+            updateScores();
+        }
+
+        function updateScores() {
+            let catScores = {};
+            let totalSum = 0;
+
+            CATEGORIES.forEach(catName => {
+                const qList = getQuestionList(CATEGORY_QUESTIONS[catName]);
+                let sum = 0;
+                qList.forEach(q => {
+                    sum += (userAnswers[q.id] !== undefined) ? userAnswers[q.id] : 5;
+                });
+                const avg = sum / qList.length;
+                catScores[catName] = avg;
+                totalSum += avg;
+            });
+
+            const overall = (totalSum / CATEGORIES.length).toFixed(1);
+            document.getElementById('overall-score').innerText = overall;
+
+            drawSvgRadar(catScores);
+        }
+
+        /* Standalone SVG Radar Drawing Logic (Zero Dependencies) */
+        function drawSvgRadar(scores) {
+            const svg = document.getElementById('radarSvg');
+            const center = 150;
+            const radius = 95;
+            const totalAxes = CATEGORIES.length;
+            
+            let gridCircles = '';
+            for (let level = 2; level <= 10; level += 2) {
+                const r = (level / 10) * radius;
+                let points = [];
+                for (let i = 0; i < totalAxes; i++) {
+                    const angle = (Math.PI * 2 / totalAxes) * i - Math.PI / 2;
+                    points.push(`${center + r * Math.cos(angle)},${center + r * Math.sin(angle)}`);
+                }
+                gridCircles += `<polygon points="${points.join(' ')}" class="radar-grid" />`;
+            }
+
+            let axesAndLabels = '';
+            let polygonPoints = [];
+            let dataDots = '';
+
+            CATEGORIES.forEach((cat, i) => {
+                const angle = (Math.PI * 2 / totalAxes) * i - Math.PI / 2;
+                const xAxis = center + radius * Math.cos(angle);
+                const yAxis = center + radius * Math.sin(angle);
+                axesAndLabels += `<line x1="${center}" y1="${center}" x2="${xAxis}" y2="${yAxis}" class="radar-axis" />`;
+
+                const labelRadius = radius + 22;
+                const xLabel = center + labelRadius * Math.cos(angle);
+                const yLabel = center + labelRadius * Math.sin(angle) + 3;
+                axesAndLabels += `<text x="${xLabel}" y="${yLabel}" class="radar-label">${cat}</text>`;
+
+                const score = scores[cat] || 5;
+                const scoreRadius = (score / 10) * radius;
+                const xScore = center + scoreRadius * Math.cos(angle);
+                const yScore = center + scoreRadius * Math.sin(angle);
+                polygonPoints.push(`${xScore},${yScore}`);
+                dataDots += `<circle cx="${xScore}" cy="${yScore}" r="4" class="radar-point" />`;
+            });
+
+            svg.innerHTML = `
+                ${gridCircles}
+                ${axesAndLabels}
+                <polygon points="${polygonPoints.join(' ')}" class="radar-polygon" />
+                ${dataDots}
+            `;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderForm();
+            updateScores();
+        });
+    </script>
+</body>
+</html>
