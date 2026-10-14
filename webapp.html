@@ -4,23 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tech Leaders CIRCLe - Careerware Coaching</title>
+    <link rel="icon" type="image/png" href="assets/insights-favicon.png">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f8fafc; color: #1e293b; line-height: 1.5; }
         
-        header { background: #0f172a; color: #ffffff; padding: 14px 24px; position: sticky; top: 0; z-index: 50; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
-        .header-inner { max-width: 1240px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
-        .brand-group { display: flex; align-items: center; gap: 14px; }
-        .logo-badge { width: 42px; height: 42px; background: #1e293b; border: 1px solid #334155; color: #38bdf8; font-weight: 800; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; }
-        .brand-company { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; display: block; }
-        .brand-app { font-size: 18px; font-weight: 800; color: #f8fafc; }
-        .header-tag { font-size: 12px; background: #1e293b; color: #cbd5e1; padding: 6px 12px; border-radius: 20px; border: 1px solid #334155; font-weight: 600; }
+        header { background: #eeeeee; color: #1e293b; padding: 0; position: sticky; top: 0; z-index: 50; border-bottom: 1px solid #d1d5db; }
+        .header-inner { max-width: 1240px; margin: 0 auto; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; min-height: 64px; }
+        .brand-group { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .brand-logo { height: 48px; width: auto; display: block; }
+        .brand-wordmark { height: 40px; width: auto; display: block; }
+        .header-tag { font-size: 12px; background: #ffffff; color: #374151; padding: 6px 14px; border-radius: 20px; border: 1px solid #d1d5db; font-weight: 600; }
 
         .container { max-width: 1240px; margin: 28px auto; padding: 0 16px; display: grid; grid-template-columns: 360px 1fr; gap: 28px; align-items: start; }
         @media (max-width: 900px) { .container { grid-template-columns: 1fr; } }
         
         .card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
-        .sticky-side { position: sticky; top: 88px; }
+        .sticky-side { position: sticky; top: 80px; }
         
         .score-box { font-size: 38px; font-weight: 900; color: #2563eb; margin: 6px 0; }
         .cat-title { font-size: 19px; font-weight: 800; color: #0f172a; margin-bottom: 4px; }
@@ -37,6 +37,13 @@
         .rating-btn.is-user { background-color: #2563eb !important; color: #ffffff !important; border-color: #2563eb !important; font-weight: 700; }
 
         .btn-reset { display: block; width: 100%; text-align: center; background: none; border: 1px solid #cbd5e1; padding: 8px; border-radius: 6px; font-size: 12px; font-weight: 600; color: #64748b; cursor: pointer; margin-top: 12px; }
+
+        .header-actions { display: flex; align-items: center; gap: 8px; }
+        .btn-header { background: #ffffff; border: 1px solid #d1d5db; color: #374151; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.15s, border-color 0.15s; }
+        .btn-header:hover { background: #f3f4f6; border-color: #9ca3af; }
+        .import-status { font-size: 12px; font-weight: 600; color: #16a34a; opacity: 0; transition: opacity 0.3s ease; white-space: nowrap; }
+        .import-status.visible { opacity: 1; }
+        .import-status.error { color: #dc2626; }
         
         /* SVG Radar Wheel Styles */
         .radar-svg { width: 100%; height: auto; max-width: 300px; display: block; margin: 0 auto; }
@@ -52,13 +59,16 @@
     <header>
         <div class="header-inner">
             <div class="brand-group">
-                <div class="logo-badge">TLC</div>
-                <div>
-                    <span class="brand-company">Careerware Coaching</span>
-                    <span class="brand-app">Tech Leaders CIRCLe</span>
-                </div>
+                <img src="assets/careerware-wordmark.png" alt="Careerware Coaching" class="brand-wordmark">
+                <img src="assets/careerware-logo.png" alt="Careerware" class="brand-logo">
             </div>
-            <div class="header-tag">Leadership Insights</div>
+            <div class="header-actions">
+                <span id="import-status" class="import-status"></span>
+                <button class="btn-header" onclick="exportAnswers()"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:5px"><path d="M8 2v8M5 7l3 3 3-3"/><rect x="2" y="11" width="12" height="3" rx="1"/></svg>Export</button>
+                <button class="btn-header" onclick="importAnswers()"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:5px"><path d="M8 10V2M5 5l3-3 3 3"/><rect x="2" y="11" width="12" height="3" rx="1"/></svg>Import</button>
+                <input type="file" id="import-file-input" accept=".json" style="display:none" onchange="handleImportFile(event)">
+            </div>
+            <div class="header-tag">CIRCLe : Your Tech Leadership Maturity Profile</div>
         </div>
     </header>
 
@@ -70,7 +80,7 @@
                 <svg id="radarSvg" class="radar-svg" viewBox="0 0 300 300"></svg>
             </div>
             <div class="card">
-                <div style="font-size: 11px; font-weight: 800; color: #94a3b8; text-transform: uppercase;">OVERALL MATURITY INDEX</div>
+                <div style="font-size: 11px; font-weight: 800; color: #94a3b8; text-transform: uppercase;">Wheel Balance & Key Metrics</div>
                 <div id="overall-score" class="score-box">5.0</div>
                 <div style="font-size: 12px; color: #64748b;">Default initial ratings set to 5 (light blue). Select ratings below to build your profile.</div>
                 <button class="btn-reset" onclick="resetAnswers()">Reset Ratings to Default</button>
@@ -82,14 +92,14 @@
     </div>
 
     <script>
-        const CATEGORIES = ["Capacity", "Innovation", "Resolve", "Career Clarity", "Leadership", "External Interfaces"];
+        const CATEGORIES = ["Capacity", "Innovation", "Resolve", "Career Clarity", "Leverage", "External Interfaces"];
 
         const CATEGORY_SUMMARIES = {
             "Capacity": "Consider how effectively time is used: is optimal time reserved for supervision of reports at all levels, not too much or too little?",
             "Innovation": "Are all adjacent organisation levels awarded a safe space within which innovation is encouraged to happen?",
             "Resolve": "How resolute or committed are you and your immediate reports estimated to feel to the current organisation and role?",
             "Career Clarity": "Are you and your reports focusing successfully on keeping alignment between your intended career path and available opportunities?",
-            "Leadership": "Maintain clear associations between Roles and decision-making responsibilities for yourself and for your reports.",
+            "Leverage": "Maintain clear associations between roles and decision-making responsibilities for yourself and for your reports.",
             "External Interfaces": "How well do you and your team(s) understand your obligations to functions like HR, Compliance, InfoSec, and Buildings Management?"
         };
 
@@ -147,7 +157,7 @@
                     { id: 25, text: "If you applied the same questions to your staff, what do you think the lowest level of clarity would be?" }
                 ]
             },
-            "Leadership": {
+            "Leverage": {
                 subCategories: [
                     { name: "Personal Decisions", questions: [
                         { id: 26, text: "How much clarity do you have regarding the precise scope of decisions you are personally responsible for?" },
@@ -322,6 +332,99 @@
                 <polygon points="${polygonPoints.join(' ')}" class="radar-polygon" />
                 ${dataDots}
             `;
+        }
+
+        function exportAnswers() {
+            const payload = {
+                version: 1,
+                exportedAt: new Date().toISOString(),
+                answers: userAnswers
+            };
+            const json = JSON.stringify(payload, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const today = new Date().toISOString().slice(0, 10);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `circle-profile-${today}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function importAnswers() {
+            document.getElementById('import-file-input').value = '';
+            document.getElementById('import-file-input').click();
+        }
+
+        function handleImportFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                let data;
+                try {
+                    data = JSON.parse(e.target.result);
+                } catch (err) {
+                    showImportStatus('✗ Invalid JSON file', true);
+                    return;
+                }
+
+                if (!data.answers || typeof data.answers !== 'object') {
+                    showImportStatus('✗ Unrecognised file format', true);
+                    return;
+                }
+
+                applyLoadedAnswers(data);
+                showImportStatus('✓ Profile loaded');
+            };
+            reader.onerror = function() {
+                showImportStatus('✗ Could not read file', true);
+            };
+            reader.readAsText(file);
+        }
+
+        function applyLoadedAnswers(data) {
+            // Convert keys to integers and values to integers for consistency
+            userAnswers = {};
+            Object.entries(data.answers).forEach(([k, v]) => {
+                const id = parseInt(k, 10);
+                const val = parseInt(v, 10);
+                if (!isNaN(id) && val >= 1 && val <= 10) {
+                    userAnswers[id] = val;
+                }
+            });
+
+            // Re-render all button states
+            document.querySelectorAll('.rating-btn').forEach(btn => {
+                btn.classList.remove('is-default', 'is-user');
+                const qIdMatch = btn.className.match(/btn-q-(\d+)/);
+                if (!qIdMatch) return;
+                const qId = parseInt(qIdMatch[1], 10);
+                const btnVal = parseInt(btn.getAttribute('data-val'), 10);
+
+                if (userAnswers[qId] !== undefined) {
+                    if (btnVal === userAnswers[qId]) btn.classList.add('is-user');
+                } else {
+                    if (btnVal === 5) btn.classList.add('is-default');
+                }
+            });
+
+            updateScores();
+        }
+
+        let importStatusTimer = null;
+        function showImportStatus(message, isError) {
+            const el = document.getElementById('import-status');
+            el.textContent = message;
+            el.classList.toggle('error', !!isError);
+            el.classList.add('visible');
+            if (importStatusTimer) clearTimeout(importStatusTimer);
+            importStatusTimer = setTimeout(() => {
+                el.classList.remove('visible');
+            }, 3000);
         }
 
         window.addEventListener('DOMContentLoaded', () => {
