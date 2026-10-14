@@ -20,7 +20,7 @@
         @media (max-width: 900px) { .container { grid-template-columns: 1fr; } }
         
         .card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
-        .sticky-side { position: sticky; top: 80px; }
+        .sticky-side { position: sticky; top: 80px; height: calc(100vh - 96px); overflow-y: auto; padding-right: 4px; }
         
         .score-box { font-size: 38px; font-weight: 900; color: #2563eb; margin: 6px 0; }
         .cat-title { font-size: 19px; font-weight: 800; color: #0f172a; margin-bottom: 4px; }
@@ -52,6 +52,21 @@
         .radar-polygon { fill: rgba(37, 99, 235, 0.25); stroke: #2563eb; stroke-width: 2.5; transition: all 0.2s ease; }
         .radar-point { fill: #2563eb; stroke: #ffffff; stroke-width: 1.5; }
         .radar-label { font-size: 9px; font-weight: 700; fill: #475569; text-anchor: middle; }
+
+        /* Metric Tiles */
+        .metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0 16px; }
+        .metric-tile { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 2px; }
+        .metric-label { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: #94a3b8; }
+        .metric-value { font-size: 28px; font-weight: 900; line-height: 1.1; }
+        .metric-sub { font-size: 11px; font-weight: 600; color: #64748b; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .metric-value.blue { color: #2563eb; }
+        .metric-value.green { color: #16a34a; }
+        .metric-value.amber { color: #d97706; }
+        .metric-value.red { color: #dc2626; }
+        .metric-value.teal { color: #0d9488; }
+        .metric-tile.tile-strongest { border-color: #bbf7d0; background: #f0fdf4; }
+        .metric-tile.tile-growth { border-color: #fed7aa; background: #fff7ed; }
+        .metric-tile.tile-harmony { border-color: #e0e7ff; background: #eef2ff; }
     </style>
 </head>
 <body>
@@ -64,6 +79,7 @@
             </div>
             <div class="header-actions">
                 <span id="import-status" class="import-status"></span>
+                <button class="btn-header" onclick="resetAnswers()">Reset Answers</button>
                 <button class="btn-header" onclick="exportAnswers()"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:5px"><path d="M8 2v8M5 7l3 3 3-3"/><rect x="2" y="11" width="12" height="3" rx="1"/></svg>Export</button>
                 <button class="btn-header" onclick="importAnswers()"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:5px"><path d="M8 10V2M5 5l3-3 3 3"/><rect x="2" y="11" width="12" height="3" rx="1"/></svg>Import</button>
                 <input type="file" id="import-file-input" accept=".json" style="display:none" onchange="handleImportFile(event)">
@@ -75,15 +91,35 @@
     <div class="container">
         <!-- Sidebar Dashboard -->
         <div class="sticky-side">
-            <div class="card">
-                <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 12px;">Maturity Balance Wheel</h3>
-                <svg id="radarSvg" class="radar-svg" viewBox="0 0 300 300"></svg>
+            <div class="card" style="padding: 12px 16px 10px;">
+                <h3 style="font-size: 14px; font-weight: 800; color: #0f172a; margin-bottom: 6px;">Maturity Balance Wheel</h3>
+                <svg id="radarSvg" class="radar-svg" viewBox="0 0 300 300" style="max-width: 260px;"></svg>
             </div>
             <div class="card">
-                <div style="font-size: 11px; font-weight: 800; color: #94a3b8; text-transform: uppercase;">Wheel Balance & Key Metrics</div>
-                <div id="overall-score" class="score-box">5.0</div>
-                <div style="font-size: 12px; color: #64748b;">Default initial ratings set to 5 (light blue). Select ratings below to build your profile.</div>
-                <button class="btn-reset" onclick="resetAnswers()">Reset Ratings to Default</button>
+                <div style="font-size: 11px; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 2px;">Wheel Balance &amp; Key Metrics</div>
+                <div style="font-size: 11px; color: #94a3b8; margin-bottom: 0;">Default ratings set to 5. Select ratings below to build your profile.</div>
+                <div class="metric-grid">
+                    <div class="metric-tile">
+                        <div class="metric-label">Wheel Score</div>
+                        <div id="metric-wheel-value" class="metric-value blue">5.0</div>
+                        <div class="metric-sub">avg of 6 zones</div>
+                    </div>
+                    <div class="metric-tile tile-strongest">
+                        <div class="metric-label">Strongest Zone</div>
+                        <div id="metric-strongest-value" class="metric-value green">5.0</div>
+                        <div id="metric-strongest-name" class="metric-sub">—</div>
+                    </div>
+                    <div class="metric-tile tile-harmony">
+                        <div class="metric-label">Harmony Index</div>
+                        <div id="metric-harmony-label" class="metric-value teal">High</div>
+                        <div id="metric-harmony-score" class="metric-sub">10.0 / 10</div>
+                    </div>
+                    <div class="metric-tile tile-growth">
+                        <div class="metric-label">Growth Zone</div>
+                        <div id="metric-growth-value" class="metric-value amber">5.0</div>
+                        <div id="metric-growth-name" class="metric-sub">—</div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -279,8 +315,41 @@
                 totalSum += avg;
             });
 
-            const overall = (totalSum / CATEGORIES.length).toFixed(1);
-            document.getElementById('overall-score').innerText = overall;
+            const n = CATEGORIES.length;
+            const wheelScore = totalSum / n;
+
+            // Strongest and Growth zones
+            let strongestCat = CATEGORIES[0], growthCat = CATEGORIES[0];
+            CATEGORIES.forEach(cat => {
+                if (catScores[cat] > catScores[strongestCat]) strongestCat = cat;
+                if (catScores[cat] < catScores[growthCat]) growthCat = cat;
+            });
+
+            // Harmony Index: 10 × (1 − stdDev / maxStdDev), maxStdDev ≈ 4.5
+            const mean = wheelScore;
+            const variance = CATEGORIES.reduce((acc, cat) => acc + Math.pow(catScores[cat] - mean, 2), 0) / n;
+            const stdDev = Math.sqrt(variance);
+            const MAX_STD_DEV = 4.5;
+            const harmonyRaw = Math.max(0, Math.min(10, 10 * (1 - stdDev / MAX_STD_DEV)));
+            const harmonyScore = harmonyRaw.toFixed(1);
+            let harmonyLabel, harmonyClass;
+            if (harmonyRaw >= 7.5) { harmonyLabel = 'High';   harmonyClass = 'teal'; }
+            else if (harmonyRaw >= 5.0) { harmonyLabel = 'Medium'; harmonyClass = 'amber'; }
+            else                        { harmonyLabel = 'Low';    harmonyClass = 'red'; }
+
+            // Update DOM
+            document.getElementById('metric-wheel-value').innerText = wheelScore.toFixed(1);
+
+            document.getElementById('metric-strongest-value').innerText = catScores[strongestCat].toFixed(1);
+            document.getElementById('metric-strongest-name').innerText = strongestCat;
+
+            const harmonyEl = document.getElementById('metric-harmony-label');
+            harmonyEl.innerText = harmonyLabel;
+            harmonyEl.className = 'metric-value ' + harmonyClass;
+            document.getElementById('metric-harmony-score').innerText = harmonyScore + ' / 10';
+
+            document.getElementById('metric-growth-value').innerText = catScores[growthCat].toFixed(1);
+            document.getElementById('metric-growth-name').innerText = growthCat;
 
             drawSvgRadar(catScores);
         }
