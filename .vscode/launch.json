@@ -9,7 +9,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome against localhost",
-            "file": "${workspaceFolder}/webapp.html",
+            "file": "${workspaceFolder}/index.html",
             "runtimeExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
         }
     ]
