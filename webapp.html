@@ -67,6 +67,29 @@
         .metric-tile.tile-strongest { border-color: #bbf7d0; background: #f0fdf4; }
         .metric-tile.tile-growth { border-color: #fed7aa; background: #fff7ed; }
         .metric-tile.tile-harmony { border-color: #e0e7ff; background: #eef2ff; }
+
+        /* ── Targeted Action Plan ─────────────────────────────── */
+        .ap-section-label { font-size: 11px; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 2px; }
+        .ap-section-desc { font-size: 11px; color: #94a3b8; margin-bottom: 14px; }
+        .ap-week-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; }
+        .ap-week-card:last-child { margin-bottom: 0; }
+        .ap-week-card--urgent { border-color: #fca5a5; background: #fff8f8; }
+        .ap-week-header { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+        .ap-week-num { font-size: 11px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+        .ap-urgent-tag { font-size: 10px; font-weight: 700; color: #dc2626; background: #fee2e2; border-radius: 10px; padding: 1px 7px; white-space: nowrap; }
+        .ap-zone-badge { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; padding: 2px 8px; border-radius: 20px; border: 1px solid; white-space: nowrap; }
+        .ap-score-band { font-size: 10px; color: #94a3b8; font-weight: 600; margin-bottom: 6px; }
+        .ap-action-title { font-size: 13px; font-weight: 800; color: #0f172a; margin-bottom: 4px; }
+        .ap-action-text { font-size: 12px; color: #475569; line-height: 1.6; }
+        .ap-locked { text-align: center; padding: 16px 8px 8px; }
+        .ap-locked-icon { font-size: 28px; margin-bottom: 8px; }
+        .ap-locked-msg { font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px; }
+        .ap-locked-sub { font-size: 11px; color: #94a3b8; margin-bottom: 14px; }
+        .ap-progress-dots { display: flex; justify-content: center; gap: 6px; margin-bottom: 6px; }
+        .ap-dot { width: 10px; height: 10px; border-radius: 50%; background: #e2e8f0; }
+        .ap-dot.filled { background: #2563eb; }
+        .ap-progress-label { font-size: 10px; color: #94a3b8; font-weight: 600; }
+        .btn-header:disabled { opacity: 0.4; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -121,6 +144,15 @@
                     </div>
                 </div>
             </div>
+            <!-- Targeted Action Plan -->
+            <div class="card">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
+                    <div class="ap-section-label">Targeted Action Plan</div>
+                    <button id="ap-export-btn" class="btn-header" onclick="exportActionPlan()" disabled style="font-size:11px;padding:4px 10px;"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:4px"><path d="M8 2v8M5 7l3 3 3-3"/><rect x="2" y="11" width="12" height="3" rx="1"/></svg>Export</button>
+                </div>
+                <div class="ap-section-desc">Answer questions in at least 4 zones to unlock your plan.</div>
+                <div id="action-plan-container"></div>
+            </div>
         </div>
 
         <!-- Questions List -->
@@ -129,6 +161,62 @@
 
     <script>
         const CATEGORIES = ["Capacity", "Innovation", "Resolve", "Career Clarity", "Leverage", "External Interfaces"];
+
+        const ZONE_COLOURS = {
+            "Capacity":            "#2563eb",
+            "Innovation":          "#7c3aed",
+            "Resolve":             "#0d9488",
+            "Career Clarity":      "#16a34a",
+            "Leverage":            "#d97706",
+            "External Interfaces": "#dc2626"
+        };
+
+        const BAND_LABELS = { 1: "Crisis", 2: "Developing", 3: "Established", 4: "Advanced", 5: "Exemplary" };
+
+        const ACTION_PLAN_ITEMS = {
+            "Capacity": {
+                1: { title: "Supervision & Delegation Audit", action: "Your Capacity scores indicate a critical gap in how supervision and delegation flow through your reporting lines. This week, map every direct report and identify whether each person has a clear, regular supervision touchpoint. Block time in your calendar for structured 1:1s and commit to holding them without cancellation for the next six weeks." },
+                2: { title: "Establish Supervision Rhythms", action: "Supervision and delegation are inconsistent across your team. Introduce a simple weekly check-in template for your direct reports to complete before each 1:1. Use it to surface blockers, workload concerns, and delegation gaps. Share the template upward too — ask your own manager to adopt it with you." },
+                3: { title: "Calibrate Delegation Depth", action: "Your Capacity zone is functional but there is room to sharpen how work is delegated. Review the last month of tasks you handled personally and identify three that could have been delegated. For each, document why you retained it and what would need to be true for you to delegate it next time." },
+                4: { title: "Stretch Delegation Upward and Downward", action: "You have solid supervision and delegation practices. Now focus on stretching them. Identify one report who is ready for a step-up assignment and one area where you could push back upward for greater autonomy. Document both as explicit development conversations this week." },
+                5: { title: "Model and Codify Best Practice", action: "Your Capacity zone is exemplary. Use this strength to benefit others. Write a one-page guide to your supervision and delegation approach and share it with peers or use it as a coaching tool with your reports. Offer to mentor a peer leader who is struggling in this area." }
+            },
+            "Innovation": {
+                1: { title: "Create Psychological Safety First", action: "Innovation cannot happen where people fear blame. This week, hold a team conversation explicitly naming that experimentation is encouraged and that failed attempts will be treated as learning. Follow up by publicly acknowledging one recent attempt at change — however small — and thanking the person who made it." },
+                2: { title: "Open an Innovation Channel", action: "Your team lacks a reliable mechanism for surfacing new ideas. Introduce a lightweight process this week: a shared document, a standing agenda item, or a brief monthly session where anyone can propose an improvement without needing to justify it upfront. Make participation voluntary but visibly valued." },
+                3: { title: "Run a Structured Experiment", action: "You have a reasonable innovation culture but it tends to be passive. Identify one process or tool your team uses that has not been reviewed in over a year. Assign a small group to spend two hours proposing an improvement. Present findings at the next team meeting and commit to acting on at least one suggestion." },
+                4: { title: "Connect Innovation to Strategy", action: "Your innovation culture is strong. Now link it explicitly to organisational goals. This week, facilitate a session where your team maps their recent ideas to the company's strategic priorities. Help them see which innovations have the highest leverage and coach them on how to build a business case for the most promising one." },
+                5: { title: "Become an Innovation Sponsor", action: "You lead an exemplary innovation culture. Extend your influence by sponsoring innovation beyond your immediate team. Volunteer to chair or contribute to a cross-functional innovation forum, or propose a structured hackathon or ideas challenge. Document your team's innovation wins and share them with senior leadership." }
+            },
+            "Resolve": {
+                1: { title: "Rebuild Commitment Foundations", action: "Low Resolve scores suggest disengagement — in yourself or your team — from the organisation or role. This week, have honest one-to-one conversations with your key reports to understand their current level of commitment and what is driving any dissatisfaction. Do not try to fix everything immediately; listen first and acknowledge what you hear." },
+                2: { title: "Address Profile and Training Gaps", action: "Resolve is developing but profiles, training access, and market value awareness are inconsistent. This week, review your own professional profile and update it. Then ask each direct report when they last updated theirs. Identify one training opportunity per person and raise it formally with HR or your manager as a development investment." },
+                3: { title: "Strengthen Industry Presence", action: "Your Resolve zone is solid but industry engagement could be deeper. Identify one external event, webinar, or professional community relevant to your field and commit to attending or participating in the next six weeks. Encourage at least two of your reports to do the same and offer to cover any reasonable cost or time." },
+                4: { title: "Actively Manage Market Value", action: "You and your team are well-committed and professionally engaged. Now be intentional about market value. This week, research current salary benchmarks and role expectations for your level and your reports' levels. Use this data in your next performance or development conversation to ensure everyone understands their market position and trajectory." },
+                5: { title: "Champion Resolve Across the Organisation", action: "Your Resolve zone is exemplary. Use your position to advocate for professional development investment at an organisational level. Propose a structured programme — mentoring circles, conference budgets, or profile-building workshops — and present it to your leadership team with a clear case for return on investment." }
+            },
+            "Career Clarity": {
+                1: { title: "Define Your Three-Year Direction", action: "Career Clarity is critically low. Without a direction, daily decisions lack coherence. This week, set aside two hours to write down — in plain language — where you want to be professionally in three years. It does not need to be perfect. Share it with one trusted colleague or coach and ask for honest feedback on whether your current role is aligned with that direction." },
+                2: { title: "Map the Gap", action: "You have some career direction but the path is unclear. Create a simple two-column document: on the left, your three-year goal; on the right, your current role's actual activities. Identify the three biggest gaps. For each gap, name one concrete action you could take in the next six weeks to begin closing it." },
+                3: { title: "Pull the Right Levers", action: "Your career direction is reasonably clear but you may not be actively using all available levers. This week, identify three specific opportunities within your organisation — projects, committees, relationships, or visibility moments — that directly support your career path. Commit to pursuing at least one of them before the end of the six-week plan." },
+                4: { title: "Align Your Team's Clarity with Your Own", action: "You have strong personal career clarity. Now extend that discipline to your reports. This week, ask each direct report to articulate their three-year career goal. For those who cannot, offer a structured conversation to help them develop one. Align their development plans to their stated goals, not just their current role requirements." },
+                5: { title: "Institutionalise Career Clarity", action: "Career Clarity is a strength for you and your team. Formalise it. Propose or implement a structured career conversation framework — perhaps quarterly career check-ins separate from performance reviews — and advocate for it as standard practice across your wider organisation." }
+            },
+            "Leverage": {
+                1: { title: "Clarify Decision Boundaries Urgently", action: "Low Leverage scores indicate that decision-making responsibilities are unclear, leading to bottlenecks, duplication, or avoidance. This week, write down every significant decision you made in the last month and categorise each as: mine alone, mine with input, or committee. Share this list with your manager and ask them to validate or correct your assumptions." },
+                2: { title: "Document Personal Decision Scope", action: "Decision clarity is developing but inconsistent. Create a one-page decision authority document for your role: what you decide alone, what requires escalation, and what requires committee. Share it with your direct reports so they understand when to come to you and when to act independently." },
+                3: { title: "Improve Committee Effectiveness", action: "Your personal decision scope is reasonably clear but committee processes may be inefficient. Identify the committee or group decision-making forum you participate in most frequently. This week, assess whether it has a clear terms of reference, a defined quorum, and a record of decisions made. If not, propose improvements to the chair or facilitator." },
+                4: { title: "Empower Reports to Decide", action: "You have strong decision clarity. Now use it to empower your team. Review the decisions your reports currently escalate to you and identify which ones they should be making themselves. Have an explicit conversation with each report about expanding their decision authority and what support they need to exercise it confidently." },
+                5: { title: "Design Decision Architecture", action: "Your Leverage zone is exemplary. Apply your expertise at a systemic level. Review the decision-making architecture across your broader function or department. Identify where authority is misaligned with accountability and propose a clearer RACI or delegation framework. Present your findings to senior leadership as a governance improvement." }
+            },
+            "External Interfaces": {
+                1: { title: "Conduct an Obligations Audit", action: "Critical gaps exist in your team's understanding of HR, Compliance, InfoSec, or Buildings Management obligations. This week, contact each of these functions and request a briefing or summary of the key obligations relevant to your team. Do not assume your team knows what they need to know — schedule a short team session to share what you learn." },
+                2: { title: "Close the Most Critical Gap", action: "You have partial awareness of external obligations but significant gaps remain. Identify which function — HR, Compliance, InfoSec, or Buildings Management — represents the highest risk if misunderstood. Focus this week on that one area: read the relevant policy, speak to the function lead, and brief your team on the top three things they must know." },
+                3: { title: "Build Ongoing Interface Relationships", action: "Your external interface awareness is functional. Now make it relational rather than transactional. This week, introduce yourself formally to the leads of HR, Compliance, InfoSec, and Buildings Management if you have not already. Ask each one: what do you most need tech leaders to understand or do differently? Use their answers to update your team briefings." },
+                4: { title: "Embed Compliance into Team Culture", action: "You have strong external interface awareness. Now make it self-sustaining. Introduce a brief standing agenda item in your team meetings for compliance and policy updates. Assign a rotating responsibility to a team member to monitor and report on changes from each external function. This distributes the knowledge and builds resilience." },
+                5: { title: "Become a Cross-Functional Bridge", action: "Your External Interfaces zone is exemplary. Use your position to improve how tech and support functions collaborate organisation-wide. Propose a regular cross-functional forum or liaison model where tech leaders and function heads share updates, flag risks, and align on obligations. Volunteer to chair or co-chair the first session." }
+            }
+        };
 
         const CATEGORY_SUMMARIES = {
             "Capacity": "Consider how effectively time is used: is optimal time reserved for supervision of reports at all levels, not too much or too little?",
@@ -217,6 +305,7 @@
         };
 
         let userAnswers = {};
+        let currentCatScores = {};
 
         function getQuestionList(catData) {
             let list = [];
@@ -351,7 +440,9 @@
             document.getElementById('metric-growth-value').innerText = catScores[growthCat].toFixed(1);
             document.getElementById('metric-growth-name').innerText = growthCat;
 
+            currentCatScores = catScores;
             drawSvgRadar(catScores);
+            renderActionPlan(catScores);
         }
 
         /* Standalone SVG Radar Drawing Logic (Zero Dependencies) */
@@ -401,6 +492,118 @@
                 <polygon points="${polygonPoints.join(' ')}" class="radar-polygon" />
                 ${dataDots}
             `;
+        }
+
+        function getScoreBand(score) {
+            if (score < 3.0) return 1;
+            if (score < 5.0) return 2;
+            if (score < 6.5) return 3;
+            if (score < 8.0) return 4;
+            return 5;
+        }
+
+        function getAnsweredZones() {
+            return CATEGORIES.filter(cat => {
+                const qList = getQuestionList(CATEGORY_QUESTIONS[cat]);
+                return qList.some(q => userAnswers[q.id] !== undefined);
+            });
+        }
+
+        function renderActionPlan(catScores) {
+            const answeredZones = getAnsweredZones();
+            const container = document.getElementById('action-plan-container');
+            const exportBtn = document.getElementById('ap-export-btn');
+            const MIN_ZONES = 4;
+
+            if (answeredZones.length < MIN_ZONES) {
+                // Show locked / progress prompt
+                exportBtn.disabled = true;
+                const filled = answeredZones.length;
+                const dots = Array.from({ length: MIN_ZONES }, (_, i) =>
+                    `<div class="ap-dot${i < filled ? ' filled' : ''}"></div>`
+                ).join('');
+                container.innerHTML = `
+                    <div class="ap-locked">
+                        <div class="ap-locked-icon">🔒</div>
+                        <div class="ap-locked-msg">Complete more zones to unlock</div>
+                        <div class="ap-locked-sub">Answer at least one question in ${MIN_ZONES} zones to generate your personalised action plan.</div>
+                        <div class="ap-progress-dots">${dots}</div>
+                        <div class="ap-progress-label">${filled} of ${MIN_ZONES} zones answered</div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Plan is unlocked — render only answered zones, sorted ascending by score
+            exportBtn.disabled = false;
+            const sorted = answeredZones
+                .map(cat => ({ zone: cat, score: catScores[cat] }))
+                .sort((a, b) => a.score - b.score);
+
+            container.innerHTML = sorted.map((item, idx) => {
+                const week = idx + 1;
+                const band = getScoreBand(item.score);
+                const { title, action } = ACTION_PLAN_ITEMS[item.zone][band];
+                const colour = ZONE_COLOURS[item.zone];
+                const bandLabel = BAND_LABELS[band];
+                const isFirst = week === 1;
+
+                return `
+                    <div class="ap-week-card${isFirst ? ' ap-week-card--urgent' : ''}">
+                        <div class="ap-week-header">
+                            <span class="ap-week-num">Week ${week}</span>
+                            ${isFirst ? '<span class="ap-urgent-tag">Most Urgent</span>' : ''}
+                            <span class="ap-zone-badge" style="background:${colour}18;color:${colour};border-color:${colour}35">${item.zone}</span>
+                        </div>
+                        <div class="ap-score-band">Score: ${item.score.toFixed(1)} &nbsp;·&nbsp; ${bandLabel}</div>
+                        <div class="ap-action-title">${title}</div>
+                        <div class="ap-action-text">${action}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function exportActionPlan() {
+            const answeredZones = getAnsweredZones();
+            const sorted = answeredZones
+                .map(cat => ({ zone: cat, score: currentCatScores[cat] }))
+                .sort((a, b) => a.score - b.score);
+
+            const weekCount = sorted.length;
+            const lines = [];
+            lines.push(`CIRCLe Tech Leadership Maturity — Targeted ${weekCount}-Week Action Plan`);
+            lines.push('Generated: ' + new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }));
+            lines.push('');
+            lines.push('='.repeat(60));
+            lines.push('');
+
+            sorted.forEach((item, idx) => {
+                const week = idx + 1;
+                const band = getScoreBand(item.score);
+                const { title, action } = ACTION_PLAN_ITEMS[item.zone][band];
+                const bandLabel = BAND_LABELS[band];
+
+                lines.push(`WEEK ${week}${week === 1 ? '  [Most Urgent]' : ''}`);
+                lines.push(`Zone: ${item.zone}  |  Score: ${item.score.toFixed(1)}  |  ${bandLabel}`);
+                lines.push('-'.repeat(60));
+                lines.push(title);
+                lines.push('');
+                lines.push(action);
+                lines.push('');
+                lines.push('');
+            });
+
+            const text = lines.join('\n');
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const today = new Date().toISOString().slice(0, 10);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `circle-action-plan-${today}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
 
         function exportAnswers() {
