@@ -9,8 +9,8 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f8fafc; color: #1e293b; line-height: 1.5; }
         
-        header { background: #eeeeee; color: #1e293b; padding: 0; position: fixed; top: 0; left: 0; right: 0; z-index: 50; border-bottom: 1px solid #d1d5db; }
-        .header-inner { max-width: 1240px; margin: 0 auto; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; min-height: 64px; }
+        header { background: #f8fafc; color: #1e293b; padding: 0; position: fixed; top: 0; left: 0; right: 0; z-index: 50; border-bottom: 1px solid #d1d5db; }
+        .header-inner { max-width: 1240px; margin: 0 auto; padding: 12px 24px; display: flex; align-items: center; justify-content: flex-start; flex-wrap: wrap; gap: 12px; min-height: 64px; }
         .brand-group { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
         .brand-logo { height: 48px; width: auto; display: block; }
         .brand-wordmark { height: 40px; width: auto; display: block; }
@@ -171,22 +171,16 @@
 
     <header>
         <div class="header-inner">
-            <div class="brand-group">
-                <!-- img src="assets/careerware-wordmark.png" alt="Careerware Coaching" class="brand-wordmark"-->
-                <!-- img src="assets/careerware-logo.png" alt="Careerware" class="brand-logo"-->
-            </div>
-            <div class="header-actions">
-                <span id="import-status" class="import-status"></span>
-                <button class="btn-header" onclick="resetAnswers()">Reset Answers</button>
-                <button class="btn-header" onclick="exportAnswers()"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:5px"><path d="M8 2v8M5 7l3 3 3-3"/><rect x="2" y="11" width="12" height="3" rx="1"/></svg>Export</button>
-                <button class="btn-header" onclick="importAnswers()"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:5px"><path d="M8 10V2M5 5l3-3 3 3"/><rect x="2" y="11" width="12" height="3" rx="1"/></svg>Import</button>
-                <input type="file" id="import-file-input" accept=".json" style="display:none" onchange="handleImportFile(event)">
-                <button class="ap-trigger-btn is-locked" id="ap-trigger-btn" onclick="openActionPlan()">
-                    📋 Action Plan
-                    <span class="ap-trigger-badge" id="ap-trigger-badge">0 / 6</span>
-                </button>
-            </div>
             <div class="header-tag">CIRCLe : Your Tech Leadership Maturity Profile</div>
+            <span id="import-status" class="import-status"></span>
+            <button class="btn-header" onclick="exportAnswers()"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:5px"><path d="M8 2v8M5 7l3 3 3-3"/><rect x="2" y="11" width="12" height="3" rx="1"/></svg>Export</button>
+            <button class="btn-header" onclick="importAnswers()"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:5px"><path d="M8 10V2M5 5l3-3 3 3"/><rect x="2" y="11" width="12" height="3" rx="1"/></svg>Import</button>
+            <input type="file" id="import-file-input" accept=".json" style="display:none" onchange="handleImportFile(event)">
+            <button class="btn-header" onclick="resetAnswers()">Reset</button>
+            <button class="ap-trigger-btn is-locked" id="ap-trigger-btn" onclick="openActionPlan()">
+                📋 Action Plan
+                <span class="ap-trigger-badge" id="ap-trigger-badge">0 / 6</span>
+            </button>
         </div>
     </header>
 
