@@ -34,7 +34,9 @@
         .q-item { margin-bottom: 18px; }
         .q-text { font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 8px; }
         
-        .btn-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; }
+        .btn-scale-wrap { display: flex; align-items: center; gap: 8px; }
+        .btn-scale-label { font-size: 10px; font-weight: 600; color: #94a3b8; white-space: nowrap; flex-shrink: 0; }
+        .btn-grid { flex: 1; display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; }
         .rating-btn { height: 34px; border: 1px solid #cbd5e1; background: #fff; border-radius: 6px; font-size: 12px; font-weight: 600; color: #475569; cursor: pointer; }
         
         .rating-btn.is-default { background-color: #e0f2fe !important; color: #0369a1 !important; border-color: #7dd3fc !important; font-weight: 700; }
@@ -315,75 +317,75 @@
             "Capacity": {
                 subCategories: [
                     { name: "Supervision", questions: [
-                        { id: 1, text: "What is your level of confidence that you receive an appropriate and effective amount of supervision and support from the organisation?" },
-                        { id: 2, text: "What is your level of confidence that you GIVE an appropriate and effective amount of supervision to your reports?" },
-                        { id: 3, text: "If you applied the same questions to those staff in your team or reporting to you, what do you think the lowest level of satisfaction would be?" }
+                        { id: 1, text: "I receive effective supervision and support from the organisation" },
+                        { id: 2, text: "I provide effective supervision to my reports" },
+                        { id: 3, text: "My reports think they provide an effective supervision to their reports" }
                     ]},
                     { name: "Delegation", questions: [
-                        { id: 4, text: "What is your level of confidence that you receive an appropriate and effective delegation from your supervisor?" },
-                        { id: 5, text: "What is your level of confidence that you delegate appropriately and effectively to your reports?" },
-                        { id: 6, text: "If you applied the same questions to those staff in your team or reporting to you, what do you think the lowest level of satisfaction would be?" }
+                        { id: 4, text: "I receive effective delegation from my supervisor" },
+                        { id: 5, text: "I delegate effectively to my reports" },
+                        { id: 6, text: "My reports think they delegate effectively to their reports" }
                     ]}
                 ]
             },
             "Innovation": {
                 questions: [
-                    { id: 7, text: "What is your level of confidence that you are part of a culture which supports innovation?" },
-                    { id: 8, text: "What is your level of confidence that you are part of a no-blame culture, regarding innovation and change?" },
-                    { id: 9, text: "What is your level of confidence that you will personally drive innovation when a suitable situation arises?" },
-                    { id: 10, text: "If you applied the same questions to those staff in your team or reporting to you, what do you think the lowest level of satisfaction would be?" }
+                    { id: 7, text: "The culture supports innovation" },
+                    { id: 8, text: "There is a no-blame culture, regarding innovation and change" },
+                    { id: 9, text: "I will personally drive innovation when a suitable opportunity arises" },
+                    { id: 10, text: "My reports believe the culture support innovation effectively" }
                 ]
             },
             "Resolve": {
                 subCategories: [
                     { name: "Profile & Perception", questions: [
-                        { id: 11, text: "How satisfied are you that your own profile is a good representation of your attributes, achievements, and potential?" },
-                        { id: 12, text: "What if you ask yourself the same question regarding your public profile (e.g. social media)?" },
-                        { id: 13, text: "Do you find time to maintain your public profile to a level of detail with which you are happy?" },
-                        { id: 14, text: "If you applied the same questions to those staff reporting to you, what do you think the lowest level of satisfaction would be?" }
+                        { id: 11, text: "My profile within the business is a good representation of myself" },
+                        { id: 12, text: "My public profile (e.g. social media) is also a good representation of myself" },
+                        { id: 13, text: "I maintain my public profile effectively" },
+                        { id: 14, text: "My reports are satisified with both their internal and public profiles" }
                     ]},
                     { name: "Training", questions: [
-                        { id: 15, text: "How satisfied are you with the training opportunities currently provided by your organisation?" },
-                        { id: 16, text: "If you asked the above question to all your reports what do you think the lowest response would be?" }
+                        { id: 15, text: "The organisation provides good training opportunities to me" },
+                        { id: 16, text: "My reports believe there are good training opportunities" }
                     ]},
                     { name: "Industry Events", questions: [
-                        { id: 17, text: "How satisfied are you with the support your organisation gives you to participate in industry events?" },
-                        { id: 18, text: "If you asked the above question to all your reports what do you think the lowest response would be?" }
+                        { id: 17, text: "I get to participate in industry events" },
+                        { id: 18, text: "My reports get to participate in industry events" }
                     ]},
                     { name: "Market Value", questions: [
-                        { id: 19, text: "How satisfied are you that your current market value is roughly where you want it to be?" },
-                        { id: 20, text: "How confident are you that your market value will perform as you wish it to over the next 12 months?" },
-                        { id: 21, text: "If you applied the same questions to staff reporting to you, what do you think the lowest satisfaction would be?" }
+                        { id: 19, text: "My market value is where I want it to be" },
+                        { id: 20, text: "My market value will perform as I wish over the next 12 months" },
+                        { id: 21, text: "My reports are happy with their own market value" }
                     ]}
                 ]
             },
             "Career Clarity": {
                 questions: [
-                    { id: 22, text: "How much clarity do you have regarding the career path that you want to follow for the next 3 years?" },
-                    { id: 23, text: "Are you doing everything possible to align your current position with your 3-year career path?" },
-                    { id: 24, text: "Are you confident that you know which levers to pull to align yourself with your chosen career path?" },
-                    { id: 25, text: "If you applied the same questions to your staff, what do you think the lowest level of clarity would be?" }
+                    { id: 22, text: "I am clear regarding my career path for the next 3 years?" },
+                    { id: 23, text: "I am doing everything necessary to follow my intended career path" },
+                    { id: 24, text: "I know which levers to pull in order to stay on my chosen career path" },
+                    { id: 25, text: "My reports have clarity regarding their career paths" }
                 ]
             },
             "Leverage": {
                 subCategories: [
                     { name: "Personal Decisions", questions: [
-                        { id: 26, text: "How much clarity do you have regarding the precise scope of decisions you are personally responsible for?" },
-                        { id: 27, text: "What if you apply the same question to your team/reports?" }
+                        { id: 26, text: "I am clear regarding the scope of decision-making I am responsible for" },
+                        { id: 27, text: "My reports are clear regarding the scope of their decision-making" }
                     ]},
                     { name: "Committee Decisions", questions: [
-                        { id: 28, text: "How much clarity do you have regarding which decisions need to be made by a committee?" },
-                        { id: 29, text: "How confident are you that the decision-making committees you belong to operate efficiently?" }
+                        { id: 28, text: "I am clear as to which decisions need to be made by a committee" },
+                        { id: 29, text: "I am confident that those decision-making committees operate efficiently" }
                     ]}
                 ]
             },
             "External Interfaces": {
                 questions: [
-                    { id: 30, text: "What is your level of confidence regarding Human Resources policy and procedure obligations?" },
-                    { id: 31, text: "What if you ask yourself the same question regarding Compliance?" },
-                    { id: 32, text: "What if you ask yourself the same question regarding Information Security?" },
-                    { id: 33, text: "What if you ask yourself the same question regarding Buildings Management?" },
-                    { id: 34, text: "If you asked all your reports the same questions, what do you think the lowest confidence score would be?" }
+                    { id: 30, text: "I am fully aware of my Human Resources duties" },
+                    { id: 31, text: "I am fully aware of my Compliance duties" },
+                    { id: 32, text: "I am fully aware of my Information Security duties" },
+                    { id: 33, text: "I am fully aware of my Buildings Management duties" },
+                    { id: 34, text: "My reports are all fully aware of their duties towards other business functions" }
                 ]
             }
         };
@@ -441,7 +443,11 @@
                 return `
                     <div class="q-item">
                         <div class="q-text">${q.id}. ${q.text}</div>
-                        <div class="btn-grid">${buttons}</div>
+                        <div class="btn-scale-wrap">
+                            <span class="btn-scale-label">Strongly<br>disagree</span>
+                            <div class="btn-grid">${buttons}</div>
+                            <span class="btn-scale-label">Strongly<br>agree</span>
+                        </div>
                     </div>
                 `;
             }).join('');
